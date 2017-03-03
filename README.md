@@ -22,16 +22,17 @@ Memory (256 bytes). The memory contains our program code and can be used by the 
 Console output. The console output uses memory mapping and maps a specific portion of the memory to the console. Thus writing to the console output is as simple as writing into a specific memory location.
 Overall not a very powerful machine but more than enough to run a program.
 
-Now. Let's write some code.
-
-The CPU
+## The CPU
 The heart of the simulator is the CPU. The CPU consists of 4 general purpose registers (GP) and their job is to hold the values needed to execute an instruction/command. How does the CPU know what to execute? For this, we use an instruction pointer (IP). Technically the IP is just another register with some additional functionality. The IP holds the location of the next instruction in the memory and on each CPU cycle the CPU grabs this instruction and executes it.
 
 While this little functionality is enough to execute some programs it is not enough to execute any kind of programs. For example in order to provide IF-then-else functionality the CPU needs to make a decision based on the result of the previously executed instruction. Those results are stored in 1-bit flags. Our CPU will contain three different flags:
 
 Zero (Z). The most important one. If the result of an instruction is 0 then this flag contains 1 otherwise 0.
+
 Carry (C). If an instruction generated a carry over then this flag is set to 1.
+
 Fault. In case an instruction leads to a faulty state of the CPU (e.g. division by 0) then this flag is set to 1. In a case of fault, the CPU is halted and no more instruction are executed.
+
 Last but not least we upgrade our CPU with a stack pointer register. The stack pointer (SP) as the name already gives away points to the current stack position in the memory. It can be incremented and decremented by the program to store data and implement functions.
 
 First we define all the registers, pointers, and flags. Then a reset function which is used to initialize the CPU and make a reset in case we would like to restart the computer.
@@ -46,6 +47,7 @@ function reset() {
     carry = false;
     fault = false;
 }
+
 On each CPU cycle, the next step is executed. Each step does only execute one single instruction. Possible instructions are Addition, Subtraction, Jump (Branching), Multiplication, Division and so on. 
 It is important to know that there is a specific instruction for each operation. Thus adding two registers together or adding a constant numeric value to a register are two different instructions. This means that there will be a lot of instructions even for our simple simulator. In a case of addition, we will implement 4 possible instructions.
 
@@ -116,4 +118,5 @@ function processResult(value) {
 
     return value;
 };
+
 You will have noticed that the instruction pointer was increased by +3 instead of +1. This is because an instruction takes up 1 byte for the opcode and for each operand another byte of memory. The add instruction requires therefore 3 bytes of memory. Yes, there is a lot of memory optimization potential and I leave this as an exercise to you.
